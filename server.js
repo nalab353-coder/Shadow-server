@@ -1,39 +1,44 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const OpenAI = require("openai");
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import OpenAI from "openai";
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
+// Simple test route
 app.get("/", (req, res) => {
-  res.send("ShadowAI Server Running 🚀");
+  res.send("Charles & Shivaan Chatbot is running!");
 });
 
+// Chat route
 app.post("/chat", async (req, res) => {
   try {
     const { message } = req.body;
+    if (!message) return res.status(400).json({ error: "No message provided" });
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: message }],
     });
 
-    res.json({ reply: response.choices[0].message.content });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ reply: "Server error 😔" });
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
+// Use Render dynamic port or fallback to 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
