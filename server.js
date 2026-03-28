@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const openai = new OpenAI({
-  apiKey: processREMOVED.OPENAI_KEY,
+  apiKey: process.env.OPENAI_KEY,
 });
 
 app.get("/", (req, res) => {
