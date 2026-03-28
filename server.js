@@ -9,12 +9,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from "public" folder
+// Serve static files from "public"
 app.use(express.static("public"));
 
-// Chatbot endpoint
+// OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Chatbot endpoint
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
   if (!message) return res.status(400).json({ error: "No message provided" });
@@ -31,5 +32,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
